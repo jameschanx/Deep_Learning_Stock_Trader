@@ -47,16 +47,39 @@ if __name__=="__main__":
     holding_limit = 1000
     btr = BackTester(starting_cash, holding_limit)
     
-    #in-sample
-    start_date = pd.datetime(2011,1,1)
-    end_date = pd.datetime(2011,12,31)
+#    #test 1 case GOOG
+#    in_sd = pd.datetime(2008,1,1)
+#    in_ed = pd.datetime(2009,12,31)
+#    out_sd = pd.datetime(2010,1,1)
+#    out_ed = pd.datetime(2011,12,31)
+#    ticker = 'GOOG'
+#    
+    #test 2 case JPM
+    in_sd = pd.datetime(2008,1,1)
+    in_ed = pd.datetime(2009,12,31)
+    out_sd = pd.datetime(2010,1,1)
+    out_ed = pd.datetime(2011,12,31)
+    ticker = 'JPM'
     
+#    #test 3 case AMZN
+#    in_sd = pd.datetime(2008,1,1)
+#    in_ed = pd.datetime(2009,12,31)
+#    out_sd = pd.datetime(2010,1,1)
+#    out_ed = pd.datetime(2011,12,31)
+#    ticker = 'AMZN'
+    
+#    #test 4 case AAPL
+#    in_sd = pd.datetime(2008,1,1)
+#    in_ed = pd.datetime(2009,12,31)
+#    out_sd = pd.datetime(2010,1,1)
+#    out_ed = pd.datetime(2011,12,31)
+#    ticker = 'AAPL'
+
     #train model
-    ticker = 'GOOG'
-    nnt.fit(ticker, start_date, end_date)
+    nnt.fit(ticker, in_sd, in_ed)    
     
     #generate trade in-sample
-    df_trades = nnt.generate_trades(start_date, end_date) 
+    df_trades = nnt.generate_trades(in_sd, in_ed) 
     
     plot_title = 'Deep Learning Trader for {}, In-Sample'.format(ticker)
     algorithm_title = 'Deep Learning Trader'
@@ -67,7 +90,7 @@ if __name__=="__main__":
     end_date = pd.datetime(2012,12,31)
     
     #generate trade out-of-sample
-    df_trades = nnt.generate_trades(start_date, end_date) 
+    df_trades = nnt.generate_trades(out_sd, out_ed) 
     plot_title = 'Deep Learning Trader for , Out-of-Sample'.format(ticker)
     algorithm_title = 'Deep Learning Trader'
     btr.backtest(df_trades, plot_title, algorithm_title, benchmark=True, plot_size=(8,6))    
