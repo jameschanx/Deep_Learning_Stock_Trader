@@ -7,27 +7,34 @@ import pandas as pd
 from trader_utils import BackTester, predictions_to_trades, get_xy
 from keras.models import Sequential
 from keras.layers import Dense
+from sklearn.preprocessing import StandardScaler
 
 class DeepLearningTrader:
     def __init__(self):
         self.n = 1
         self.rolling_window = 21
         self.ticker = None
+        self.scaler = None
 
     def fit(self, ticker, start_date, end_date): 
         self.ticker = ticker
         train_x, train_y = get_xy(ticker, start_date, end_date, self.rolling_window, self.n)
+        scaler = StandardScaler()
+        scaler.fit(train_x)
+        self.scaler = scaler
+        train_x = scaler.transform(train_x)
         model = Sequential()
         model.add(Dense(64, input_dim=3, activation='relu'))
         for i in range(4):
             model.add(Dense(64, activation='relu'))
         model.add(Dense(1, activation='sigmoid'))
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
-        model.fit(train_x, train_y, epochs=2000, verbose=1)
+        model.fit(train_x, train_y, epochs=500, verbose=1)
         self.model = model
     
     def generate_trades(self, start_date, end_date):
         test_x, _ = get_xy(self.ticker, start_date, end_date, self.rolling_window, self.n)
+        test_x = self.scaler.transform(test_x)
         predictions = self.model.predict_classes(test_x)
         actual_start = self.rolling_window - 1
         trades = predictions_to_trades(self.ticker, predictions, start_date, end_date, self.n, actual_start)
