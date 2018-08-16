@@ -30,7 +30,7 @@ def _get_x(prices, rolling_window):
 def _get_y(prices, n):
     df_y = _get_n_day_return(prices, n)
     df_y[df_y > 0] = 1
-    df_y[df_y <= 0] = -1
+    df_y[df_y <= 0] = 0
     return df_y
 
 def get_xy(ticker, start_date, end_date, rolling_window, n):
@@ -69,7 +69,7 @@ def predictions_to_trades(ticker, predictions, start_date, end_date, n, actual_s
                     trades.values[i,:] = 1
                     holding += 1
                     count_down = n            
-            elif prediction == -1:
+            else:
                 if(holding < 0):
                     pass
                 elif(holding > 0):
@@ -134,9 +134,9 @@ class TechnicalIndicators:
         ax0.scatter(sell_signal.index, prices.loc[sell_signal.index], marker='v', color='indianred', s=20)
         ax1.grid()
         ax1.legend()
+        plt.show()
         if output: 
             plt.savefig('PSMA.png')
-        plt.close()
         
         #-------------------------------STD PLOT----------------------------------
         std = self.std()
@@ -151,9 +151,9 @@ class TechnicalIndicators:
         plt.fill_between(std_over.index, [20 for _ in range(std_over.shape[0])], std_over.values.T[0], alpha='.5')
         plt.setp(plt.gca().xaxis.get_majorticklabels(),'rotation', 30)
         plt.grid()
+        plt.show()
         if output:
             plt.savefig('STD.png')
-        plt.close()
         
         #-------------------------------BB PLOT----------------------------------
         bb, ub, lb = self.bb(1.5)
@@ -179,9 +179,9 @@ class TechnicalIndicators:
             plt.axvline(i, (prices.loc[i] - y_low_lim)/(y_up_lim - y_low_lim), 1, color='lightpink')
         plt.plot(prices, label="Price",color='slategray')
         plt.legend()
+        plt.show()
         if output:
             plt.savefig('BB.png')
-        plt.close()
         
 class BackTester:
     def __init__(self, starting_cash = 1000000, holding_limit = 1000):
@@ -209,7 +209,7 @@ class BackTester:
         portvals = np.sum(portvals, axis=1)
         return portvals
     
-    def backtest(self, df_trades, plot_title = 'Untitled', algorithm_title = 'Untitled Algorithm', benchmark = True, plot_size=(8,6)):
+    def backtest(self, df_trades, plot_title = 'Untitled', algorithm_title = 'Untitled Algorithm', benchmark = True, plot_size=(8,6), output=False):
         start_date, end_date = df_trades.index[[0, -1]]
         ticker = df_trades.columns.values[0]
 
@@ -239,7 +239,7 @@ class BackTester:
         buy_line = df_trades[ticker][df_trades[ticker] > 0].index
         sell_line = df_trades[ticker][df_trades[ticker] < 0].index
         ax1.set_ylabel("Order Entry")
-        ax1.set_ylim((0, 0))
+#        ax1.set_ylim((0, 0))
         for i, line in enumerate(buy_line):
             if i == 0:
                 ax1.axvline(line, color='limegreen', label='Buy')
@@ -252,8 +252,9 @@ class BackTester:
                 ax1.axvline(line, color='indianred')
         ax1.legend()
         ax1.get_yaxis().set_ticks([])
-        plt.savefig(plot_title + '.png')
-        plt.close()
+        plt.show()
+        if output:
+            plt.savefig(plot_title + '.png')
 
 if __name__=='__main__':
     print('ni hao')
