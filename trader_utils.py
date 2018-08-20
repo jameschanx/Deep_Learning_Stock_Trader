@@ -232,6 +232,7 @@ class BackTester:
         ax0.set_ylabel("Normalized Portfolio Value")
         ax0.grid()
         ax0.legend()
+        ax0.tick_params(axis='x', labelbottom=False)
         
         #subplot for order entries
         ax1 = plt.subplot(gs[1], sharex=ax0)
@@ -239,7 +240,6 @@ class BackTester:
         buy_line = df_trades[ticker][df_trades[ticker] > 0].index
         sell_line = df_trades[ticker][df_trades[ticker] < 0].index
         ax1.set_ylabel("Order Entry")
-#        ax1.set_ylim((0, 0))
         for i, line in enumerate(buy_line):
             if i == 0:
                 ax1.axvline(line, color='limegreen', label='Buy')
@@ -252,6 +252,7 @@ class BackTester:
                 ax1.axvline(line, color='indianred')
         ax1.legend()
         ax1.get_yaxis().set_ticks([])
+        plt.xticks(rotation=30)
         plt.show()
         if output:
             plt.savefig(plot_title + '.png')
